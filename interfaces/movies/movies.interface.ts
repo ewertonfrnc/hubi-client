@@ -1,3 +1,5 @@
+import type { User } from "~/interfaces/users/users.interface";
+
 export type TMDBCastMember = {
   adult: boolean;
   gender: number;
@@ -11,6 +13,20 @@ export type TMDBCastMember = {
   character: string;
   credit_id: string;
   order: number;
+};
+
+export type TMDBCrewMember = {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string | null;
+  credit_id: string;
+  department: string;
+  job: string;
 };
 
 export type TMDBMovie = {
@@ -31,9 +47,40 @@ export type TMDBMovie = {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  runtime: number;
   credits: {
     cast: TMDBCastMember[];
+    crew: TMDBCrewMember[];
   };
+};
+
+export type CastMember = {
+  adult: boolean;
+  gender: number;
+  id: number;
+  knownForDepartment: string;
+  name: string;
+  originalName: string;
+  popularity: number;
+  profilePath: string;
+  castId: number;
+  character: string;
+  creditId: string;
+  order: number;
+};
+
+export type CrewMember = {
+  adult: boolean;
+  gender: number;
+  id: number;
+  knownForDepartment: string;
+  name: string;
+  originalName: string;
+  popularity: number;
+  profilePath: string | null;
+  creditId: string;
+  department: string;
+  job: string;
 };
 
 export type Movie = {
@@ -49,5 +96,17 @@ export type Movie = {
   releaseDate: string;
   voteAverage: number;
   voteCount: number;
-  cast: TMDBCastMember[];
+  runtime: number;
+  cast: CastMember[];
+  crew: CrewMember[];
+};
+
+export type MovieReview = {
+  id: number;
+  createdAt: string;
+  movieId: number;
+  userId: string;
+  review: string;
+  rating: "1" | "2" | "3" | "4" | "5";
+  users: User;
 };

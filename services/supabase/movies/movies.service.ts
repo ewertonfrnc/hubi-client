@@ -1,4 +1,4 @@
-import type { Movie } from "~/interfaces/movies/movies.interface";
+import type { Movie, MovieReview } from "~/interfaces/movies/movies.interface";
 import supabase from "~/services/config/supabase.service";
 
 class SupabaseMoviesService {
@@ -16,7 +16,7 @@ class SupabaseMoviesService {
   async checkIfIsWatchedMovie(
     movieId: number,
   ): Promise<{ id: number; movieId: number; userId: string }[] | null> {
-    let { data: watched_movies, error } = await supabase
+    const { data: watched_movies, error } = await supabase
       .from("watched_movies")
       .select("*")
       .eq("movieId", movieId);
@@ -24,6 +24,17 @@ class SupabaseMoviesService {
     if (error) throw new Error(error.message);
 
     return watched_movies;
+  }
+
+  async loadMovieComments(movieId: number): Promise<MovieReview[]> {
+    const { data, error } = await supabase
+      .from("movie_reviews")
+      .select("*, users(*)")
+      .eq("movieId", movieId);
+
+    if (error) throw new Error(error.message);
+
+    return data;
   }
 }
 

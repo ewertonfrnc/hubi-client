@@ -1,10 +1,18 @@
 :root {
   --white: #fff;
   --black: #000;
-}
 
-html {
-  font-size: 62.5%;
+  --violet-50: #f5f3ff;
+  --violet-100: #ede9fe;
+  --violet-200: #c7d2fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #6366f1;
+  --violet-600: #4f46e5;
+  --violet-700: #4338ca;
+  --violet-800: #3730a3;
+  --violet-900: #312e81;
+  --violet-950: #2e1065;
 }
 
 body {
@@ -13,6 +21,12 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-h1,h2,h3,h4,h5,h6,p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   margin: 0;
 }

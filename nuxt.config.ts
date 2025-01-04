@@ -18,12 +18,30 @@ export const HubiScheme = definePreset(Aura, {
       900: "{violet.900}",
       950: "{violet.950}",
     },
+    colorScheme: {
+      dark: {
+        surface: {
+          0: "#ffffff",
+          50: "{zinc.50}",
+          100: "{zinc.100}",
+          200: "{zinc.200}",
+          300: "{zinc.300}",
+          400: "{zinc.400}",
+          500: "{zinc.500}",
+          600: "{zinc.600}",
+          700: "{zinc.700}",
+          800: "{zinc.800}",
+          900: "{zinc.900}",
+          950: "{zinc.950}",
+        },
+      },
+    },
   },
   components: {
     card: {
       colorScheme: {
         dark: {
-          background: "{primary.950}",
+          background: "{surface.800}",
         },
       },
     },
@@ -33,6 +51,22 @@ export const HubiScheme = definePreset(Aura, {
           background: "{primary.50}",
           color: "{primary.950}",
         },
+      },
+    },
+    tabs: {
+      tablist: {
+        border: {
+          color: "transparent",
+        },
+      },
+      tab: {
+        // padding: "2rem 1rem",
+        border: {
+          color: "transparent",
+        },
+      },
+      tabpanel: {
+        // padding: "4rem 1rem",
       },
     },
   },
@@ -52,7 +86,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  css: ["~/assets/css/base.css"],
+  css: ["primeicons/primeicons.css", "~/assets/css/base.css"],
 
   modules: [
     "@nuxt/eslint",

@@ -1,6 +1,46 @@
 import { MoviesService } from "~/services/tmdb";
 import { SupabaseMoviesService } from "~/services/supabase";
-import type { Movie, TMDBMovie } from "~/interfaces/movies/movies.interface";
+import type {
+  CastMember,
+  CrewMember,
+  Movie, MovieReview,
+  TMDBCastMember,
+  TMDBCrewMember,
+  TMDBMovie,
+} from "~/interfaces/movies/movies.interface";
+
+function formatCastMember(members: TMDBCastMember[]): CastMember[] {
+  return members.map((member) => ({
+    adult: member.adult,
+    castId: member.cast_id,
+    character: member.character,
+    creditId: member.credit_id,
+    gender: member.gender,
+    id: member.id,
+    knownForDepartment: member.known_for_department,
+    name: member.name,
+    order: member.order,
+    originalName: member.original_name,
+    popularity: member.popularity,
+    profilePath: member.profile_path,
+  }));
+}
+
+function formatCrewMember(members: TMDBCrewMember[]): CrewMember[] {
+  return members.map((member) => ({
+    adult: member.adult,
+    creditId: member.credit_id,
+    gender: member.gender,
+    id: member.id,
+    knownForDepartment: member.known_for_department,
+    name: member.name,
+    originalName: member.original_name,
+    popularity: member.popularity,
+    profilePath: member.profile_path,
+    job: member.job,
+    department: member.department,
+  }));
+}
 
 function formatMovieResponse(movie: TMDBMovie): Movie {
   return {
@@ -16,9 +56,13 @@ function formatMovieResponse(movie: TMDBMovie): Movie {
     releaseDate: movie.release_date,
     voteAverage: movie.vote_average,
     voteCount: movie.vote_count,
-    cast: movie?.credits?.cast || [],
+    runtime: movie?.runtime,
+    cast: movie?.credits ? formatCastMember(movie?.credits?.cast) : [],
+    crew: movie?.credits ? formatCrewMember(movie?.credits?.crew) : [],
   };
 }
+
+function formatMovieComment(reviews: MovieReview[]) {}
 
 export const useMoviesStore = defineStore("movies", {
   actions: {
@@ -52,9 +96,12 @@ export const useMoviesStore = defineStore("movies", {
     async checkIfIsWatchedMovie(movieId: number) {
       return await SupabaseMoviesService.checkIfIsWatchedMovie(movieId);
     },
-    async saveWatchedMovie(movie: {}) {
+    async saveWatchedMovie(movie: object) {
       const watchedMovies = await SupabaseMoviesService.saveWatchedMovie(movie);
       return watchedMovies ?? [];
+    },
+    async loadMovieComments(movieId: number) {
+      return await SupabaseMoviesService.loadMovieComments(movieId);
     },
   },
 });
