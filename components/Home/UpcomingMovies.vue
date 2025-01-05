@@ -29,7 +29,7 @@
                 }}</span>
               </template>
             </Chip>
-            <p>{{ movie?.title }}</p>
+            <p class="movie__title">{{ movie?.title }}</p>
           </div>
         </div>
       </router-link>
@@ -57,16 +57,17 @@ onMounted(() => fetchUpcomingMovies());
 
 <style scoped lang="scss">
 .display {
-  display: flex;
-  gap: 1.6rem;
+  padding: 0 20px;
   overflow: scroll;
+  display: flex;
+  gap: 16px;
 }
 
 .movie {
-  width: 30rem;
-  height: 10rem;
+  width: 300px;
+  height: 100px;
   flex-shrink: 0;
-  border-radius: 1.6rem;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
 
@@ -78,12 +79,12 @@ onMounted(() => fetchUpcomingMovies());
   }
 
   &__info {
-    padding: 1.6rem;
+    padding: 16px;
     color: var(--white);
 
     display: flex;
     align-items: flex-end;
-    gap: 0.8rem;
+    gap: 8px;
 
     position: absolute;
     bottom: 0;
@@ -92,15 +93,19 @@ onMounted(() => fetchUpcomingMovies());
   }
 
   &__poster {
-    width: 5rem;
-    height: 7.5rem;
-    border-radius: 0.8rem;
+    width: 50px;
+    height: 75px;
+    border-radius: 8px;
     border: 1px solid var(--white);
   }
 
   &__chip {
-    font-size: 1.1rem;
+    font-size: 10px;
     font-weight: 600;
+  }
+
+  &__title {
+    font-size: 12px;
   }
 }
 </style>

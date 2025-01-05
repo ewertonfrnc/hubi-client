@@ -1,17 +1,24 @@
 <template>
-  <div class="movie">
+  <div class="movie" v-if="!state.loading && state.movie">
     <section class="movie__bg-hero">
       <img
-        :src="`${BASE_IMAGE_URL}/${movie?.backdropPath}`"
+        :src="`${BASE_IMAGE_URL}/${state.movie?.backdropPath}`"
         alt=""
         class="movie__cover"
       />
     </section>
 
     <section class="movie__title">
-      <h1>{{ movie?.title }}</h1>
-      <span>{{ movie?.tagline }}</span>
+      <img
+        :src="`${BASE_IMAGE_URL}/${state.movie?.posterPath}`"
+        alt=""
+        class="movie__poster"
+      />
+
+      <h1>{{ state.movie?.title }}</h1>
     </section>
+
+    <MovieActions />
 
     <Tabs value="0">
       <TabList>
@@ -19,9 +26,10 @@
         <Tab value="1">ELENCO</Tab>
         <Tab value="2">COMENTÁRIOS</Tab>
       </TabList>
+
       <TabPanels>
         <TabPanel value="0">
-          <MovieAbout />
+          <MovieAbout :movie="state.movie" />
         </TabPanel>
         <TabPanel value="1">
           <MovieCast />
@@ -31,89 +39,53 @@
         </TabPanel>
       </TabPanels>
     </Tabs>
-
-    <!--    <section class="movie__cards">-->
-    <!--      <div class="movie__details">-->
-    <!--        <img-->
-    <!--          :src="`${BASE_IMAGE_URL}/${movie?.posterPath}`"-->
-    <!--          alt=""-->
-    <!--          class="movie__poster"-->
-    <!--        />-->
-    <!--        <div class="movie__title">-->
-    <!--          <h1>{{ movie?.title }}</h1>-->
-    <!--          <p>{{ movie?.tagline }}</p>-->
-    <!--        </div>-->
-    <!--      </div>-->
-
-    <!--      <Button-->
-    <!--        :label="!isWatchedMovie ? 'Quero assistir' : 'Já vi'"-->
-    <!--        @click="saveWatchedMovie"-->
-    <!--      />-->
-
-    <!--      <Card>-->
-    <!--        <template #title>-->
-    <!--          <span>Sinopse</span>-->
-    <!--        </template>-->
-    <!--        <template #content>-->
-    <!--          <p class="movie__synopsis">-->
-    <!--            {{ movie?.overview }}-->
-    <!--          </p>-->
-    <!--        </template>-->
-    <!--      </Card>-->
-
-    <!--      <Card>-->
-    <!--        <template #title>-->
-    <!--          <span>Elenco</span>-->
-    <!--        </template>-->
-    <!--        <template #content>-->
-    <!--          <div class="movie__cast">-->
-    <!--            <div v-for="castMember in movie?.cast" :key="castMember.cast_id">-->
-    <!--              <img-->
-    <!--                :src="`${BASE_IMAGE_URL}/${castMember?.profile_path}`"-->
-    <!--                alt=""-->
-    <!--                class="movie__cast-member"-->
-    <!--              />-->
-    <!--            </div>-->
-    <!--          </div>-->
-    <!--        </template>-->
-    <!--      </Card>-->
-    <!--    </section>-->
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Movie } from "~/interfaces/movies/movies.interface";
+import MovieActions from "~/components/Movie/MovieActions.vue";
 
 const { params } = useRoute();
 const store = useMoviesStore();
 
-const movieId = Number(params.movieId);
-const movie = ref<Movie>();
-const isWatchedMovie = ref(false);
+type State = {
+  loading: boolean;
+  isWatchedMovie: boolean;
+  movieId: number;
+  movie: Movie | null;
+};
+const state = reactive<State>({
+  movie: null,
+  loading: false,
+  isWatchedMovie: false,
+  movieId: Number(params.movieId),
+});
 
 async function fetchMovieDetails() {
-  movie.value = await store.loadMovieDetails(movieId);
+  state.loading = true;
+  state.movie = await store.loadMovieDetails(state.movieId);
+  state.loading = false;
 }
 
 async function checkIfIsWatchedMovie() {
-  const watchedMovies = await store.checkIfIsWatchedMovie(movieId);
+  const watchedMovies = await store.checkIfIsWatchedMovie(state.movieId);
   if (!watchedMovies) return;
 
-  isWatchedMovie.value = !!watchedMovies.find(
-    (movie) => movie.movieId === movieId,
-  );
-  console.log(isWatchedMovie.value);
-}
-
-async function saveWatchedMovie() {
-  const user = JSON.parse(localStorage.getItem("user")!);
-  const watchedMovie = { movieId: movie.value?.id, userId: user.id };
-
-  const watchedMovies = await store.saveWatchedMovie(watchedMovie);
-  isWatchedMovie.value = !!watchedMovies.find(
-    (movie) => movie.movieId === movieId,
+  state.isWatchedMovie = !!watchedMovies.find(
+    (movie) => movie.movieId === state.movieId,
   );
 }
+
+// async function saveWatchedMovie() {
+//   const user = JSON.parse(localStorage.getItem("user")!);
+//   const watchedMovie = { movieId: movie.value?.id, userId: user.id };
+//
+//   const watchedMovies = await store.saveWatchedMovie(watchedMovie);
+//   isWatchedMovie.value = !!watchedMovies.find(
+//     (movie) => movie.movieId === movieId,
+//   );
+// }
 
 onMounted(() => {
   fetchMovieDetails();
@@ -136,39 +108,49 @@ onMounted(() => {
       width: 100%;
       height: 100%;
     }
+
+    &::after {
+      content: "";
+      background: linear-gradient(to bottom, transparent, #121212);
+      width: 100%;
+      height: 100%;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
 
-  &__cards {
-    margin-top: -5rem;
-    position: relative;
-    z-index: 10;
+  &__title {
+    padding: 20px 20px 10px;
+    margin-top: -100px;
 
     display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
+    align-items: flex-end;
+    gap: 16px;
   }
 
   &__details {
-    padding: 1.6rem;
+    padding: 16px;
     display: flex;
     align-items: flex-end;
-    gap: 1.6rem;
+    gap: 16px;
   }
 
   &__poster {
     width: 75px;
-    border-radius: 0.8rem;
+    border-radius: 8px;
   }
 
   &__cast {
     display: flex;
-    gap: 1.6rem;
+    gap: 16px;
     overflow: scroll;
   }
 
   &__cast-member {
-    width: 10rem;
-    border-radius: 0.8rem;
+    width: 100px;
+    border-radius: 8px;
   }
 }
 </style>

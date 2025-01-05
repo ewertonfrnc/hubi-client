@@ -33,6 +33,7 @@ export const HubiScheme = definePreset(Aura, {
           800: "{zinc.800}",
           900: "{zinc.900}",
           950: "{zinc.950}",
+          root: "#121212",
         },
       },
     },
@@ -55,18 +56,19 @@ export const HubiScheme = definePreset(Aura, {
     },
     tabs: {
       tablist: {
+        background: "{surface.root}",
         border: {
           color: "transparent",
         },
       },
       tab: {
-        // padding: "2rem 1rem",
+        background: "{surface.root}",
         border: {
           color: "transparent",
         },
       },
       tabpanel: {
-        // padding: "4rem 1rem",
+        background: "{surface.root}",
       },
     },
   },

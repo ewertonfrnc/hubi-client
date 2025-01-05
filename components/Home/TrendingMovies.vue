@@ -1,28 +1,37 @@
 <template>
   <h2>Novidades</h2>
 
-  <div class="display">
-    <router-link
-      :to="`movies/${movie.id}`"
-      v-for="movie in trendingMovies"
-      :key="movie.id"
-      class="movie"
-    >
-      <img
-        :src="`${BASE_IMAGE_URL}/${movie.backdropPath}`"
-        alt=""
-        class="movie__cover"
-      />
-      <div class="movie__info">
+  <template v-if="!state.loading">
+    <div class="display">
+      <router-link
+        :to="`movies/${movie.id}`"
+        v-for="movie in state.trendingMovies"
+        :key="movie.id"
+        class="movie"
+      >
         <img
-          :src="`${BASE_IMAGE_URL}/${movie.posterPath}`"
+          :src="`${BASE_IMAGE_URL}/${movie.backdropPath}`"
           alt=""
-          class="movie__poster"
+          class="movie__cover"
         />
-        <p>{{ movie.title }}</p>
-      </div>
-    </router-link>
-  </div>
+        <div class="movie__info">
+          <img
+            :src="`${BASE_IMAGE_URL}/${movie.posterPath}`"
+            alt=""
+            class="movie__poster"
+          />
+          <p>{{ movie.title }}</p>
+        </div>
+      </router-link>
+    </div>
+  </template>
+  <template v-else>
+    <div class="skeleton-display">
+      <Skeleton width="300px" height="169px" />
+      <Skeleton width="300px" height="169px" />
+      <Skeleton width="300px" height="169px" />
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -30,10 +39,16 @@ import { useMoviesStore } from "~/stores/home.store";
 import type { Movie } from "~/interfaces/movies/movies.interface";
 
 const store = useMoviesStore();
-const trendingMovies = ref<Movie[]>([]);
+
+const state = reactive({
+  loading: false,
+  trendingMovies: [] as Movie[],
+});
 
 async function fetchTrendingMovies() {
-  trendingMovies.value = await store.fetchTrendingMovies();
+  state.loading = true;
+  state.trendingMovies = await store.fetchTrendingMovies();
+  state.loading = false;
 }
 
 onMounted(() => fetchTrendingMovies());
@@ -41,33 +56,32 @@ onMounted(() => fetchTrendingMovies());
 
 <style scoped lang="scss">
 .display {
-  display: flex;
-  gap: 1.6rem;
+  padding: 0 20px;
   overflow: scroll;
+  display: flex;
+  gap: 16px;
 }
 
 .movie {
-  width: 30rem;
-  height: 20rem;
+  width: 300px;
   flex-shrink: 0;
-  border-radius: 1.6rem;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
 
   &__cover {
     object-fit: cover;
     width: 100%;
-    height: 100%;
     opacity: 0.4;
   }
 
   &__info {
-    padding: 1.6rem;
+    padding: 16px;
     color: var(--white);
 
     display: flex;
     align-items: flex-end;
-    gap: 0.8rem;
+    gap: 8px;
 
     position: absolute;
     bottom: 0;
@@ -76,10 +90,17 @@ onMounted(() => fetchTrendingMovies());
   }
 
   &__poster {
-    width: 5rem;
-    height: 7.5rem;
-    border-radius: 0.8rem;
+    width: 50px;
+    height: 75px;
+    border-radius: 8px;
     border: 1px solid var(--white);
   }
+}
+
+.skeleton-display {
+  padding: 0 20px;
+  overflow: scroll;
+  display: flex;
+  gap: 16px;
 }
 </style>

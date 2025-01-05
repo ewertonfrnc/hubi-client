@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <h2>Em alta</h2>
+  <h2>Em alta</h2>
 
+  <template v-if="!state.loading">
     <div class="display">
       <router-link
-        v-for="movie in popularMovies"
+        v-for="movie in state.popularMovies"
         :to="`/movies/${movie.id}`"
         :key="movie.id"
         class="movie"
@@ -16,17 +16,30 @@
         />
       </router-link>
     </div>
-  </div>
+  </template>
+  <template v-else>
+    <div class="skeleton-display">
+      <Skeleton width="100px" height="150px" />
+      <Skeleton width="100px" height="150px" />
+      <Skeleton width="100px" height="150px" />
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
 import type { Movie } from "~/interfaces/movies/movies.interface";
 
 const store = useMoviesStore();
-const popularMovies = ref<Movie[]>();
+
+const state = reactive({
+  loading: false,
+  popularMovies: [] as Movie[],
+});
 
 async function fetchPopularMovies() {
-  popularMovies.value = await store.loadPopularMovies();
+  state.loading = true;
+  state.popularMovies = await store.loadPopularMovies();
+  state.loading = false;
 }
 
 onMounted(() => fetchPopularMovies());
@@ -36,17 +49,25 @@ onMounted(() => fetchPopularMovies());
 .display {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.6rem;
+  justify-content: center;
+  gap: 16px;
 }
 
 .movie {
-  width: 10rem;
-  border-radius: 0.8rem;
+  width: 100px;
+  border-radius: 8px;
   overflow: hidden;
 
   &__poster {
     object-fit: cover;
     width: 100%;
   }
+}
+
+.skeleton-display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 </style>
