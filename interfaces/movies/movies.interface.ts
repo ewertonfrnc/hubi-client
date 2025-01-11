@@ -107,6 +107,19 @@ export type MovieReview = {
   movieId: number;
   userId: string;
   review: string;
-  rating: "1" | "2" | "3" | "4" | "5";
+  spoilers: boolean;
   users: User;
+};
+
+export type MovieReviewPayload = {
+  userId: string;
+  movieId: number;
+  review: string;
+  spoilers: boolean;
+};
+
+export type MovieRatingPayload = {
+  movieId: number;
+  userId: number;
+  rating: 1 | 2 | 3 | 4 | 5;
 };

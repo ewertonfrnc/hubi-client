@@ -3,7 +3,10 @@ import { SupabaseMoviesService } from "~/services/supabase";
 import type {
   CastMember,
   CrewMember,
-  Movie, MovieReview,
+  Movie,
+  MovieRatingPayload,
+  MovieReview,
+  MovieReviewPayload,
   TMDBCastMember,
   TMDBCrewMember,
   TMDBMovie,
@@ -62,9 +65,25 @@ function formatMovieResponse(movie: TMDBMovie): Movie {
   };
 }
 
-function formatMovieComment(reviews: MovieReview[]) {}
-
 export const useMoviesStore = defineStore("movies", {
+  state() {
+    return {
+      movie: null as Movie | null,
+      movieReviews: [] as MovieReview[],
+      movieRatings: [],
+    };
+  },
+  getters: {
+    currentMovie(state) {
+      return state.movie;
+    },
+    reviews(state) {
+      return state.movieReviews;
+    },
+    ratings(state) {
+      return state.movieRatings;
+    },
+  },
   actions: {
     async fetchTrendingMovies() {
       const trendingMovies = await MoviesService.fetchTrendingMovies();
@@ -74,7 +93,7 @@ export const useMoviesStore = defineStore("movies", {
     },
     async loadMovieDetails(movieId: number) {
       const movieDetails = await MoviesService.loadMovieDetails(movieId);
-      return formatMovieResponse(movieDetails);
+      this.movie = formatMovieResponse(movieDetails);
     },
     async loadUpcomingMovies() {
       const upcomingMovies = await MoviesService.loadUpcomingMovies();
@@ -101,7 +120,16 @@ export const useMoviesStore = defineStore("movies", {
       return watchedMovies ?? [];
     },
     async loadMovieComments(movieId: number) {
-      return await SupabaseMoviesService.loadMovieComments(movieId);
+      this.movieReviews =
+        await SupabaseMoviesService.loadMovieComments(movieId);
+    },
+    async registerMovieReview(review: MovieReviewPayload) {
+      const newReview = await SupabaseMoviesService.registerMovieReview(review);
+      this.movieReviews = [newReview, ...this.movieReviews];
+    },
+    async registerMovieRating(ratingPayload: MovieRatingPayload) {
+      const newRating =
+        await SupabaseMoviesService.registerMovieRating(ratingPayload);
     },
   },
 });

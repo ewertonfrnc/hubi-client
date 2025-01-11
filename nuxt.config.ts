@@ -71,6 +71,11 @@ export const HubiScheme = definePreset(Aura, {
         background: "{surface.root}",
       },
     },
+    dialog: {
+      border: {
+        color: "transparent",
+      },
+    },
   },
 });
 
@@ -86,6 +91,10 @@ export default defineNuxtConfig({
       htmlAttrs: {
         class: "my-app-dark",
       },
+    },
+    pageTransition: {
+      name: "page",
+      mode: "out-in",
     },
   },
   css: ["primeicons/primeicons.css", "~/assets/css/base.css"],

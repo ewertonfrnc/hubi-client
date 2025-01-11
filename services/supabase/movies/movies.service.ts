@@ -1,4 +1,9 @@
-import type { Movie, MovieReview } from "~/interfaces/movies/movies.interface";
+import type {
+  Movie,
+  MovieRatingPayload,
+  MovieReview,
+  MovieReviewPayload,
+} from "~/interfaces/movies/movies.interface";
 import supabase from "~/services/config/supabase.service";
 
 class SupabaseMoviesService {
@@ -30,7 +35,30 @@ class SupabaseMoviesService {
     const { data, error } = await supabase
       .from("movie_reviews")
       .select("*, users(*)")
-      .eq("movieId", movieId);
+      .eq("movieId", movieId)
+      .order("createdAt", { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return data;
+  }
+
+  async registerMovieReview(review: MovieReviewPayload): Promise<MovieReview> {
+    const { data, error } = await supabase
+      .from("movie_reviews")
+      .insert([review])
+      .select();
+
+    if (error) throw new Error(error.message);
+
+    return data[0];
+  }
+
+  async registerMovieRating(ratingPayload: MovieRatingPayload) {
+    const { data, error } = await supabase
+      .from("movie_ratings")
+      .insert([ratingPayload])
+      .select();
 
     if (error) throw new Error(error.message);
 

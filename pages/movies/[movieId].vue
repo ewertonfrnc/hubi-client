@@ -1,8 +1,8 @@
 <template>
-  <div class="movie" v-if="!state.loading && state.movie">
+  <div class="movie" v-if="!state.loading && store.currentMovie">
     <section class="movie__bg-hero">
       <img
-        :src="`${BASE_IMAGE_URL}/${state.movie?.backdropPath}`"
+        :src="`${BASE_IMAGE_URL}/${store.currentMovie?.backdropPath}`"
         alt=""
         class="movie__cover"
       />
@@ -10,15 +10,15 @@
 
     <section class="movie__title">
       <img
-        :src="`${BASE_IMAGE_URL}/${state.movie?.posterPath}`"
+        :src="`${BASE_IMAGE_URL}/${store.currentMovie?.posterPath}`"
         alt=""
         class="movie__poster"
       />
 
-      <h1>{{ state.movie?.title }}</h1>
+      <h1>{{ store.currentMovie?.title }}</h1>
     </section>
 
-    <MovieActions />
+    <MovieActions :movie="store.currentMovie" />
 
     <Tabs value="0">
       <TabList>
@@ -29,13 +29,13 @@
 
       <TabPanels>
         <TabPanel value="0">
-          <MovieAbout :movie="state.movie" />
+          <MovieAbout :movie="store.currentMovie" />
         </TabPanel>
         <TabPanel value="1">
           <MovieCast />
         </TabPanel>
         <TabPanel value="2">
-          <MovieComments />
+          <MovieComments :movie-id="state.movieId" />
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -49,14 +49,8 @@ import MovieActions from "~/components/Movie/MovieActions.vue";
 const { params } = useRoute();
 const store = useMoviesStore();
 
-type State = {
-  loading: boolean;
-  isWatchedMovie: boolean;
-  movieId: number;
-  movie: Movie | null;
-};
+type State = { loading: boolean; isWatchedMovie: boolean; movieId: number };
 const state = reactive<State>({
-  movie: null,
   loading: false,
   isWatchedMovie: false,
   movieId: Number(params.movieId),
@@ -64,7 +58,7 @@ const state = reactive<State>({
 
 async function fetchMovieDetails() {
   state.loading = true;
-  state.movie = await store.loadMovieDetails(state.movieId);
+  await store.loadMovieDetails(state.movieId);
   state.loading = false;
 }
 
